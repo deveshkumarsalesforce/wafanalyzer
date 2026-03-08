@@ -76,6 +76,7 @@ Output is in the `release/` folder:
 - **Request Drilldown** — Main requests (level-0) with include counts; expand any row to see its includes and timing.
 - **URL Analysis** — Top URLs by request count and by average runtime.
 - **SQL Explorer** — Run simple queries against the loaded data (e.g. `SELECT * FROM wa_logs ORDER BY runtime_ms DESC LIMIT 100`). Click schema columns to insert into the query.
+- **Save report as PDF** — After loading a log and viewing reports, use **Save report as PDF** to download all analysis, drilldown, and URL data as a multi-page PDF. No need to re-upload the log to review the report later. Available in both the Mac app and the browser (npm) version.
 
 All processing is client-side; your log data never leaves your machine.
 
@@ -96,7 +97,8 @@ Main requests are identified by `request_id` ending with `-0-00`. Cache is infer
 
 1. **Load a log file** — Drag and drop a WA log file onto the upload area, or click **New Upload** and choose a file.
 2. **Tabs** — Use **Analysis**, **Request Drilldown**, **URL Analysis**, and **SQL Explorer** to explore the data.
-3. **Clear or replace** — **Clear Memory** removes loaded data; **New Upload** loads another file (replaces current data).
+3. **Save report as PDF** — Click **Save report as PDF** (green button) to download a PDF of all reports. Use it to share or review later without re-uploading.
+4. **Clear or replace** — **Clear Memory** removes loaded data; **New Upload** loads another file (replaces current data).
 
 A sample file `wa-log-sample.log` is included in the repo for testing.
 

@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { parseWALogFile } from './lib/waParser'
+import { exportElementToPdf } from './lib/pdfExport'
 import type { WALogRow } from './types/wa'
 import { TabAnalysis } from './components/TabAnalysis'
 import { TabDrilldown } from './components/TabDrilldown'
@@ -21,7 +22,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('analysis')
   const [dragOver, setDragOver] = useState(false)
   const [parseErrors, setParseErrors] = useState<string[]>([])
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const reportRef = useRef<HTMLDivElement>(null)
 
   const clearMemory = useCallback(() => {
     setWaLogs([])
@@ -63,6 +66,20 @@ export default function App() {
 
   const hasData = waLogs.length > 0
 
+  const saveReportAsPdf = useCallback(async () => {
+    if (!hasData || !reportRef.current) return
+    setIsGeneratingPdf(true)
+    try {
+      await new Promise((r) => setTimeout(r, 800))
+      const name = `WA-Log-Report-${new Date().toISOString().slice(0, 10)}.pdf`
+      await exportElementToPdf(reportRef.current, name)
+    } catch (e) {
+      console.error('PDF export failed:', e)
+    } finally {
+      setIsGeneratingPdf(false)
+    }
+  }, [hasData])
+
   return (
     <div className="app">
       <header className="header">
@@ -72,6 +89,17 @@ export default function App() {
             <p className="subtitle">Salesforce Commerce Cloud / Demandware Web Adapter Log Analysis</p>
           </div>
           <div className="header-actions">
+            {hasData && (
+              <button
+                type="button"
+                className="btn-pdf"
+                onClick={saveReportAsPdf}
+                disabled={isGeneratingPdf}
+                title="Save all reports and data as PDF"
+              >
+                {isGeneratingPdf ? '… Generating PDF' : '📄 Save report as PDF'}
+              </button>
+            )}
             <button type="button" className="btn-clear" onClick={clearMemory} title="Clear loaded data">
               🗑️ Clear Memory
             </button>
@@ -142,8 +170,49 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        Data is temporary and will be deleted after 2 hours or when you close this page. Download any results you need before closing.
+        Data is temporary and will be deleted after 2 hours or when you close this page. Use &quot;Save report as PDF&quot; to keep a copy.
       </footer>
+
+      {isGeneratingPdf && (
+        <div className="pdf-overlay" aria-busy="true">
+          <div className="pdf-message">Generating PDF…</div>
+        </div>
+      )}
+
+      {hasData && (
+        <div
+          ref={reportRef}
+          className="report-for-pdf"
+          aria-hidden="true"
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            zIndex: isGeneratingPdf ? 9998 : -1,
+            visibility: isGeneratingPdf ? 'visible' : 'hidden',
+            pointerEvents: 'none',
+          }}
+        >
+          <div className="report-title">WA Log Analyzer — Report</div>
+          <div className="report-date">{new Date().toLocaleString()}</div>
+          <div className="report-section">
+            <h2>Analysis</h2>
+            <TabAnalysis rows={waLogs} />
+          </div>
+          <div className="report-section">
+            <h2>Request Drilldown</h2>
+            <TabDrilldown rows={waLogs} />
+          </div>
+          <div className="report-section">
+            <h2>URL Analysis</h2>
+            <TabUrlAnalysis rows={waLogs} />
+          </div>
+          <div className="report-section">
+            <h2>SQL Explorer</h2>
+            <p style={{ color: 'var(--text-muted)', margin: 0 }}>Run queries in the app. This report contains Analysis, Drilldown, and URL data.</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

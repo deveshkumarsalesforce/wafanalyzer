@@ -74,6 +74,20 @@
   color: white;
 }
 
+.btn-pdf {
+  background: #16a34a;
+  color: white;
+}
+
+.btn-pdf:hover {
+  filter: brightness(1.08);
+}
+
+.btn-pdf:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .tabs {
   display: flex;
   gap: 0;
@@ -188,6 +202,61 @@
 .progress-cancel:hover {
   border-color: var(--btn-upload);
   color: var(--btn-upload);
+}
+
+/* PDF report container - off-screen for capture */
+.report-for-pdf {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  width: 1200px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 24px;
+  font-family: 'Outfit', system-ui, sans-serif;
+}
+
+.report-for-pdf .report-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.report-for-pdf .report-date {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.report-for-pdf .report-section {
+  margin-bottom: 32px;
+  break-inside: avoid;
+}
+
+.report-for-pdf .report-section h2 {
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* PDF overlay when generating */
+.pdf-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.pdf-overlay .pdf-message {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
 /* Section titles */
